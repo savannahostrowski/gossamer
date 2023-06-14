@@ -20,6 +20,7 @@ const (
 	RPAREN   = ")"
 	LBRACE   = "{"
 	RBRACE   = "}"
+	COLON    = ":"
 	DEF      = "DEF"
 	TRUE     = "TRUE"
 	FALSE    = "FALSE"
@@ -35,4 +36,13 @@ type Token struct {
 	Literal string
 }
 
-var keywords = map[string]TokenType {}
+var keywords = map[string]TokenType{
+	"def": DEF,
+}
+
+func LookupIdent(ident string) TokenType {
+	if tok, ok := keywords[ident]; ok {
+		return tok
+	}
+	return IDENT
+}

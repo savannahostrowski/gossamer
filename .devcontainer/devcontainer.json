@@ -1,0 +1,17 @@
+{
+	"name": "Ubuntu",
+	"image": "mcr.microsoft.com/devcontainers/base:jammy",
+	"features": {
+		"ghcr.io/devcontainers/features/go:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go",
+				"ms-python.python",
+				"ms-azuretools.vscode-docker",
+				"github.copilot"
+			]
+		}
+	}
+}

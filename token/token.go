@@ -26,6 +26,7 @@ const (
 	FALSE    = "FALSE"
 	IF       = "IF"
 	ELSE     = "ELSE"
+	ELIF     = "ELIF"
 	RETURN   = "RETURN"
 	EQ       = "=="
 	NOT_EQ   = "!="
@@ -37,7 +38,13 @@ type Token struct {
 }
 
 var keywords = map[string]TokenType{
-	"def": DEF,
+	"def":    DEF,
+	"True":   TRUE,
+	"False":  FALSE,
+	"if":     IF,
+	"else":   ELSE,
+	"elif":   ELIF,
+	"return": RETURN,
 }
 
 func LookupIdent(ident string) TokenType {

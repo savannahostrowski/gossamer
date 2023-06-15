@@ -13,7 +13,11 @@ func TestNextToken(t *testing.T) {
 	def add(x, y):
 		return x + y
 	
-	result = add(five, ten)`
+	result = add(five, ten)
+
+	10 == 10
+	10 != 9
+	`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -45,6 +49,12 @@ func TestNextToken(t *testing.T) {
 		{token.COMMA, ","},
 		{token.IDENT, "ten"},
 		{token.RPAR, ")"},
+		{token.NUMBER, "10"},
+		{token.EQEQUAL, "=="},
+		{token.NUMBER, "10"},
+		{token.NUMBER, "10"},
+		{token.NOTEQUAL, "!="},
+		{token.NUMBER, "9"},
 		{token.ENDMARKER, ""},
 	}
 	l := New(input)

@@ -35,24 +35,92 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.LPAR, l.ch)
 	case ')':
 		tok = newToken(token.RPAR, l.ch)
+	case '[':
+		tok = newToken(token.LSQB, l.ch)
+	case ']':
+		tok = newToken(token.RSQB, l.ch)
+	case ';':
+		tok = newToken(token.SEMI, l.ch)
+	case ':':
+		tok = newToken(token.COLON, l.ch)
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
 	case '+':
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.PLUSEQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
 		tok = newToken(token.PLUS, l.ch)
+		}
+	case '-':
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.MINUSEQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.MINUS, l.ch)
+		}
 	case '{':
 		tok = newToken(token.LBRACE, l.ch)
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
-	case ':':
-		tok = newToken(token.COLON, l.ch)
 	case '/':
-		tok = newToken(token.SLASH, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.SLASHEQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.SLASH, l.ch)
+		}
 	case '*':
-		tok = newToken(token.STAR, l.ch)
+		if l.peekChar() == '*' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.DOUBLESTAR, Literal: string(ch) + string(l.ch)}
+		} else if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.STAREQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.STAR, l.ch)
+		}
 	case '<':
-		tok = newToken(token.LESS, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.LESSEQUAL, Literal: string(ch) + string(l.ch)}
+		} else if l.peekChar() == '>'{
+			if l.peekChar() == '=' {
+				ch := l.ch
+				l.readChar()
+				tok = token.Token{Type: token.NOTEQUAL, Literal: string(ch) + string(l.ch)}
+			} else {
+				ch := l.ch
+				l.readChar()
+				tok = token.Token{Type: token.RIGHTSHIFT, Literal: string(ch) + string(l.ch)}
+			}
+		} else {
+			tok = newToken(token.LESS, l.ch)
+		}
 	case '>':
-		tok = newToken(token.GREATER, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.GREATEREQUAL, Literal: string(ch) + string(l.ch)}
+		} else if l.peekChar() == '<'{
+			if l.peekChar() == '=' {
+				ch := l.ch
+				l.readChar()
+				tok = token.Token{Type: token.LEFTSHIFTEQUAL, Literal: string(ch) + string(l.ch)}
+			} else {
+				ch := l.ch
+				l.readChar()
+				tok = token.Token{Type: token.LEFTSHIFT, Literal: string(ch) + string(l.ch)}
+			}
+		} else {
+			tok = newToken(token.GREATER, l.ch)
+		}
 	case '!':
 		if l.peekChar() == '=' {
 			ch := l.ch
@@ -60,6 +128,44 @@ func (l *Lexer) NextToken() token.Token {
 			tok = token.Token{Type: token.NOTEQUAL, Literal: string(ch) + string(l.ch)}
 		} else {
 			tok = newToken(token.EXCLAMATION, l.ch)
+		}
+	case '~':
+		tok = newToken(token.TILDE, l.ch)
+	case '^':
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.CIRCUMFLEXEQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.CIRCUMFLEX, l.ch)
+		}
+	case '.':
+		tok = newToken(token.DOT, l.ch)
+	case '%':
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.PERCENTEQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.PERCENT, l.ch)
+		}
+	case '@':
+		tok = newToken(token.AT, l.ch)
+	case '&':
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.AMPEREQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.AMPER, l.ch)
+		}
+	case '|':
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.VBAREQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.VBAR, l.ch)
 		}
 
 	case 0:

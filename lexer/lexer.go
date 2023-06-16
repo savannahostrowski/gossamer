@@ -42,7 +42,13 @@ func (l *Lexer) NextToken() token.Token {
 	case ';':
 		tok = newToken(token.SEMI, l.ch)
 	case ':':
-		tok = newToken(token.COLON, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.COLONEQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.COLON, l.ch)
+		}
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
 	case '+':
@@ -51,13 +57,17 @@ func (l *Lexer) NextToken() token.Token {
 			l.readChar()
 			tok = token.Token{Type: token.PLUSEQUAL, Literal: string(ch) + string(l.ch)}
 		} else {
-		tok = newToken(token.PLUS, l.ch)
+			tok = newToken(token.PLUS, l.ch)
 		}
 	case '-':
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.MINUSEQUAL, Literal: string(ch) + string(l.ch)}
+		} else if l.peekChar() == '>' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.RARROW, Literal: string(ch) + string(l.ch)}
 		} else {
 			tok = newToken(token.MINUS, l.ch)
 		}
@@ -66,108 +76,156 @@ func (l *Lexer) NextToken() token.Token {
 	case '}':
 		tok = newToken(token.RBRACE, l.ch)
 	case '/':
+		slashtok := l.ch
 		if l.peekChar() == '=' {
-			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.SLASHEQUAL, Literal: string(ch) + string(l.ch)}
+			literal := string(slashtok) + string(l.ch)
+			tok = token.Token{Type: token.SLASHEQUAL, Literal: literal}
+		} else if l.peekChar() == '/' {
+			secondslashtok := l.ch
+			l.readChar()
+			if l.peekChar() == '=' {
+				l.readChar()
+				literal := string(slashtok) + string(secondslashtok) + string(l.ch)
+				tok = token.Token{Type: token.DOUBLESLASHEQUAL, Literal: literal}
+			} else {
+				literal := string(secondslashtok) + string(l.ch)
+				tok = token.Token{Type: token.DOUBLESLASH, Literal: literal}
+			}
 		} else {
-			tok = newToken(token.SLASH, l.ch)
+			tok = newToken(token.SLASH, slashtok)
 		}
 	case '*':
-		if l.peekChar() == '*' {
-			ch := l.ch
+		startok := l.ch
+		if l.peekChar() == '=' {
 			l.readChar()
-			tok = token.Token{Type: token.DOUBLESTAR, Literal: string(ch) + string(l.ch)}
-		} else if l.peekChar() == '=' {
-			ch := l.ch
+			tok = token.Token{Type: token.STAREQUAL, Literal: string(startok) + string(l.ch)}
+		} else if l.peekChar() == '*' {
+			secondstartok := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.STAREQUAL, Literal: string(ch) + string(l.ch)}
+			if l.peekChar() == '=' {
+				l.readChar()
+				literal := string(startok) + string(secondstartok) + string(l.ch)
+				tok = token.Token{Type: token.DOUBLESTAREQUAL, Literal: literal}
+			} else {
+				tok = token.Token{Type: token.DOUBLESTAR, Literal: string(secondstartok) + string(l.ch)}
+			}
 		} else {
-			tok = newToken(token.STAR, l.ch)
+			tok = newToken(token.STAR, startok)
 		}
 	case '<':
+		lesstok := l.ch
 		if l.peekChar() == '=' {
-			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.LESSEQUAL, Literal: string(ch) + string(l.ch)}
-		} else if l.peekChar() == '>'{
+			tok = token.Token{Type: token.LESSEQUAL, Literal: string(lesstok) + string(l.ch)}
+		} else if l.peekChar() == '<' {
+			secondlesstok := l.ch
+			l.readChar()
 			if l.peekChar() == '=' {
-				ch := l.ch
 				l.readChar()
-				tok = token.Token{Type: token.NOTEQUAL, Literal: string(ch) + string(l.ch)}
+				literal := string(lesstok) + string(secondlesstok) + string(l.ch)
+				tok = token.Token{Type: token.LEFTSHIFTEQUAL, Literal: literal}
 			} else {
-				ch := l.ch
-				l.readChar()
-				tok = token.Token{Type: token.RIGHTSHIFT, Literal: string(ch) + string(l.ch)}
+				literal := string(secondlesstok) + string(l.ch)
+				tok = token.Token{Type: token.LEFTSHIFT, Literal: literal}
 			}
 		} else {
-			tok = newToken(token.LESS, l.ch)
+			tok = newToken(token.LESS, lesstok)
 		}
 	case '>':
+		greatertok := l.ch
 		if l.peekChar() == '=' {
-			ch := l.ch
 			l.readChar()
-			tok = token.Token{Type: token.GREATEREQUAL, Literal: string(ch) + string(l.ch)}
-		} else if l.peekChar() == '<'{
+			tok = token.Token{Type: token.GREATEREQUAL, Literal: string(greatertok) + string(l.ch)}
+		} else if l.peekChar() == '>' {
+			secondgreatertok := l.ch
+			l.readChar()
 			if l.peekChar() == '=' {
-				ch := l.ch
 				l.readChar()
-				tok = token.Token{Type: token.LEFTSHIFTEQUAL, Literal: string(ch) + string(l.ch)}
+				literal := string(greatertok) + string(secondgreatertok) + string(l.ch)
+				tok = token.Token{Type: token.RIGHTSHIFTEQUAL, Literal: literal}
 			} else {
-				ch := l.ch
-				l.readChar()
-				tok = token.Token{Type: token.LEFTSHIFT, Literal: string(ch) + string(l.ch)}
+				literal := string(secondgreatertok) + string(l.ch)
+				tok = token.Token{Type: token.RIGHTSHIFT, Literal: literal}
 			}
 		} else {
-			tok = newToken(token.GREATER, l.ch)
+			tok = newToken(token.GREATER, greatertok)
 		}
 	case '!':
+		// !=
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.NOTEQUAL, Literal: string(ch) + string(l.ch)}
 		} else {
+			// !
 			tok = newToken(token.EXCLAMATION, l.ch)
 		}
 	case '~':
 		tok = newToken(token.TILDE, l.ch)
 	case '^':
+		// ^=
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.CIRCUMFLEXEQUAL, Literal: string(ch) + string(l.ch)}
 		} else {
+			// ^
 			tok = newToken(token.CIRCUMFLEX, l.ch)
 		}
 	case '.':
-		tok = newToken(token.DOT, l.ch)
+		// ...
+		if l.peekChar() == '.' {
+			ch := l.ch
+			l.readChar()
+			if l.peekChar() == '.' {
+				l.readChar()
+				tok = token.Token{Type: token.ELLIPSIS, Literal: string(ch) + string(l.ch) + string(l.ch)}
+			} else {
+				tok = token.Token{Type: token.ERRORTOKEN, Literal: string(ch) + string(l.ch)}
+			}
+		} else {
+			// .
+			tok = newToken(token.DOT, l.ch)
+		}
 	case '%':
+		// %=
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.PERCENTEQUAL, Literal: string(ch) + string(l.ch)}
 		} else {
+			// %
 			tok = newToken(token.PERCENT, l.ch)
 		}
 	case '@':
-		tok = newToken(token.AT, l.ch)
+		if l.peekChar() == '=' {
+			ch := l.ch
+			l.readChar()
+			tok = token.Token{Type: token.ATEQUAL, Literal: string(ch) + string(l.ch)}
+		} else {
+			tok = newToken(token.AT, l.ch)
+		}
 	case '&':
+		// &=
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.AMPEREQUAL, Literal: string(ch) + string(l.ch)}
 		} else {
+			// &
 			tok = newToken(token.AMPER, l.ch)
 		}
 	case '|':
+		// |=
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
 			tok = token.Token{Type: token.VBAREQUAL, Literal: string(ch) + string(l.ch)}
 		} else {
+			// |
 			tok = newToken(token.VBAR, l.ch)
 		}
-
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.ENDMARKER
@@ -184,11 +242,9 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.ERRORTOKEN, l.ch)
 		}
 	}
-
 	l.readChar()
 	return tok
 }
-
 
 func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.input) {
@@ -229,11 +285,11 @@ func isDigit(ch byte) bool {
 	return '0' <= ch && ch <= '9'
 }
 
-// TODO: skipping whitespace for now but need to figure out how to handle this 
+// TODO: skipping whitespace for now but need to figure out how to handle this
 func (l *Lexer) skipWhitespace() {
-    for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
-        l.readChar()
-    }
+	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
+		l.readChar()
+	}
 }
 
 func (l *Lexer) peekChar() byte {

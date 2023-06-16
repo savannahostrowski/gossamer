@@ -17,6 +17,31 @@ func TestNextToken(t *testing.T) {
 
 	10 == 10
 	10 != 9
+
+	/=
+	/
+	//
+	//=
+	*
+	**=
+	**
+	*=
+	<
+	<<
+	<<=
+	<=
+	>
+	>>
+	>>=
+	>=
+	@=
+	@
+	:
+	:=
+	.
+	...
+	->
+	-
 	`
 
 	tests := []struct {
@@ -55,6 +80,30 @@ func TestNextToken(t *testing.T) {
 		{token.NUMBER, "10"},
 		{token.NOTEQUAL, "!="},
 		{token.NUMBER, "9"},
+		{token.SLASHEQUAL, "/="},
+		{token.SLASH, "/"},
+		{token.DOUBLESLASH, "//"},
+		{token.DOUBLESLASHEQUAL, "//="},
+		{token.STAR, "*"},
+		{token.DOUBLESTAREQUAL, "**="},
+		{token.DOUBLESTAR, "**"},
+		{token.STAREQUAL, "*="},
+		{token.LESS, "<"},
+		{token.LEFTSHIFT, "<<"},
+		{token.LEFTSHIFTEQUAL, "<<="},
+		{token.LESSEQUAL, "<="},
+		{token.GREATER, ">"},
+		{token.RIGHTSHIFT, ">>"},
+		{token.RIGHTSHIFTEQUAL, ">>="},
+		{token.GREATEREQUAL, ">="},
+		{token.ATEQUAL, "@="},
+		{token.AT, "@"},
+		{token.COLON, ":"},
+		{token.COLONEQUAL, ":="},
+		{token.DOT, "."},
+		{token.ELLIPSIS, "..."},
+		{token.RARROW, "->"},
+		{token.MINUS, "-"},
 		{token.ENDMARKER, ""},
 	}
 	l := New(input)

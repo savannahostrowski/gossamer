@@ -82,6 +82,10 @@ const (
 	ELSE   = "ELSE"
 	ELIF   = "ELIF"
 	RETURN = "RETURN"
+
+	//Temporary
+	LET = "LET"
+	SEMICOLON = ";"
 )
 
 type Token struct {
@@ -97,6 +101,8 @@ var keywords = map[string]TokenType{
 	"else":   ELSE,
 	"elif":   ELIF,
 	"return": RETURN,
+	// TODO: REMOVE
+	"let" : LET,
 }
 
 func LookupIdent(ident string) TokenType {

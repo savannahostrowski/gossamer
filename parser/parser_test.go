@@ -7,17 +7,19 @@ import (
 	"github.com/savannahostrowski/gossamer/lexer"
 )
 
-func TestLetStatements(t *testing.T) {
+func TestVariableStatements(t *testing.T) {
+	// TODO: update test once let keyword is removed
 	input := `
-x = 5
-y = 10
-foobar = 838383
+let x = 5;
+let y = 10;
+let foobar = 838383;
 `
 
 	l := lexer.New(input)
 	p := New(l)
 
 	program := p.ParseProgram()
+	checkParserErrors(t, p)
 
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil")
@@ -38,13 +40,17 @@ foobar = 838383
 
 	for i, tt := range tests {
 		stmt := program.Statements[i]
-		if !TestVariableStatements(t, stmt, tt.expectedIdentifier) {
+		if !testVariableStatement(t, stmt, tt.expectedIdentifier) {
 			return
 		}
 	}
 }
 
-func TestVariableStatements(t *testing.T, s ast.Statement, name string) bool {
+func testVariableStatement(t *testing.T, s ast.Statement, name string) bool {
+	if s.TokenLiteral() != "let" {
+		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
+		return false
+	}
 	varStmt, ok := s.(*ast.VariableStatement)
 	if !ok {
 		t.Errorf("s not *ast.VariableStatement. got=%T", s)
@@ -61,4 +67,17 @@ func TestVariableStatements(t *testing.T, s ast.Statement, name string) bool {
 		return false
 	}
 	return true
+}
+
+func checkParserErrors(t *testing.T, p *Parser) {
+	errors := p.Errors()
+	if len(errors) == 0 {
+		return
+	}
+
+	t.Errorf("parser has %d errors", len(errors))
+	for _, msg := range errors {
+		t.Errorf("parser error: %q", msg)
+	}
+	t.FailNow()
 }

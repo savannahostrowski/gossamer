@@ -1,16 +1,19 @@
 package ast
 
-import "go/token"
+import (
+	"bytes"
+	"github.com/savannahostrowski/gossamer/token"
+)
 
 type Node interface {
 	TokenLiteral() string
+	String() string
 }
 
 type Statement interface {
 	Node
 	statementNode()
 }
-
 
 type Expression interface {
 	Node
@@ -30,16 +33,44 @@ func (p *Program) TokenLiteral() string {
 }
 
 type VariableStatement struct {
-	Name *Identifier
+	Name  *Identifier
 	Value Expression
 }
 
 func (vs *VariableStatement) statementNode() {}
+// func (vs *VariableStatement) TokenLiteral() string {return vs.Value.String()}
 
 type Identifier struct {
 	Token token.Token //IDENT
 	Value string
 }
 
-func (i *Identifier) expressionNode() {}
-func (i *Identifier) TokenLiteral() {return i.Token.Literal}
+func (i *Identifier) expressionNode()      {}
+func (i *Identifier) TokenLiteral() string { return i.Token.Literal }
+
+// type ExpressionStatement struct {
+// 	Token      token.Token
+// 	Expression Expression
+// }
+
+// func (es *ExpressionStatement) statementNode()       {}
+// func (es *ExpressionStatement) TokenLiteral() string { return es.Token.Literal }
+
+// func (p *Program) String() string {
+// 	var out bytes.Buffer
+
+// 	for _, s := range p.Statements {
+// 		out.WriteString(s.String())
+// 	}
+// 	return out.String()
+// }
+
+// func (ls *ReturnStatement) String() string {
+// 	var out bytes.Buffer
+
+// 	out.WriteString(rs.TokenLiteral() + " ")
+
+// 	if (rs.ReturnValue != nil) {
+// 		out.WriteString(rs.ReturnValue.String())
+// 	}
+// }

@@ -85,7 +85,6 @@ const (
 
 	//Temporary
 	LET = "LET"
-	SEMICOLON = ";"
 )
 
 type Token struct {

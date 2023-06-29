@@ -8,6 +8,11 @@ import (
 	"github.com/savannahostrowski/gossamer/token"
 )
 
+type (
+	prefixParseFn func() ast.Expression
+	infixParseFn func(ast.Expression) ast.Expression
+)
+
 type Parser struct {
 	l *lexer.Lexer
 
@@ -53,7 +58,15 @@ func (p *Parser) ParseProgram() *ast.Program {
 }
 
 func (p *Parser) ParseStatement() ast.Statement {
-	return p.parseVariableStatement()
+	switch p.curToken.Type {
+	// TODO: refactor
+	case token.LET:
+		return p.parseVariableStatement()
+	case token.RETURN:
+		return p.parseReturnStatement()
+	default:
+		return nil
+	}
 }
 
 func (p *Parser) parseVariableStatement() *ast.VariableStatement {
@@ -69,6 +82,17 @@ func (p *Parser) parseVariableStatement() *ast.VariableStatement {
 		return nil
 	}
 
+	for !p.curTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+	return stmt
+}
+
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	stmt := &ast.ReturnStatement{Token: p.curToken}
+
+	p.nextToken()
+	// TODO: refactor
 	for !p.curTokenIs(token.SEMICOLON) {
 		p.nextToken()
 	}

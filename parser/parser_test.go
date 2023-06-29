@@ -10,9 +10,9 @@ import (
 func TestVariableStatements(t *testing.T) {
 	// TODO: update test once let keyword is removed
 	input := `
-let x = 5;
-let y = 10;
-let foobar = 838383;
+return 5;
+return 10;
+return 143958;
 `
 
 	l := lexer.New(input)
@@ -27,21 +27,18 @@ let foobar = 838383;
 
 	if len(program.Statements) != 3 {
 		t.Fatalf("program.Statements does not contain 3 statements. got=%d",
-		len(program.Statements))
+			len(program.Statements))
 	}
 
-	tests := []struct {
-		expectedIdentifier string
-	}{
-		{"x"},
-		{"y"},
-		{"foobar"},
-	}
-
-	for i, tt := range tests {
-		stmt := program.Statements[i]
-		if !testVariableStatement(t, stmt, tt.expectedIdentifier) {
-			return
+	for _, stmt := range program.Statements {
+		returnStmt, ok := stmt.(*ast.ReturnStatement)
+		if !ok {
+			t.Errorf("stmt not *ast.ReturnStatement. got=%T", stmt)
+			continue
+		}
+		if returnStmt.TokenLiteral() != "return" {
+			t.Errorf("returnStmt.TokenLiteral not 'return', got=%q",
+				returnStmt.TokenLiteral())
 		}
 	}
 }

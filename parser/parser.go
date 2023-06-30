@@ -20,7 +20,7 @@ const (
 )
 
 var precedences = map[token.TokenType]int{
-	token.EQEQUAL:    EQUAL,
+	token.EQEQUAL:  EQUAL,
 	token.NOTEQUAL: EQUAL,
 	token.LESS:     LESSGREATER,
 	token.GREATER:  LESSGREATER,
@@ -58,14 +58,14 @@ func New(l *lexer.Lexer) *Parser {
 	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 
 	p.infixParseFns = make(map[token.TokenType]infixParseFn)
-    p.registerInfix(token.PLUS, p.parseInfixExpression)
-    p.registerInfix(token.MINUS, p.parseInfixExpression)
-    p.registerInfix(token.SLASH, p.parseInfixExpression)
-    p.registerInfix(token.STAR, p.parseInfixExpression)
-    p.registerInfix(token.EQEQUAL, p.parseInfixExpression)
-    p.registerInfix(token.NOTEQUAL, p.parseInfixExpression)
-    p.registerInfix(token.LESS, p.parseInfixExpression)
-    p.registerInfix(token.GREATER, p.parseInfixExpression)
+	p.registerInfix(token.PLUS, p.parseInfixExpression)
+	p.registerInfix(token.MINUS, p.parseInfixExpression)
+	p.registerInfix(token.SLASH, p.parseInfixExpression)
+	p.registerInfix(token.STAR, p.parseInfixExpression)
+	p.registerInfix(token.EQEQUAL, p.parseInfixExpression)
+	p.registerInfix(token.NOTEQUAL, p.parseInfixExpression)
+	p.registerInfix(token.LESS, p.parseInfixExpression)
+	p.registerInfix(token.GREATER, p.parseInfixExpression)
 
 	p.nextToken()
 	p.nextToken()
@@ -164,7 +164,7 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 	leftExp := prefix()
 
 	// TODO: refactor
-	for !p.peekTokenIs(token.SEMI) && precedence <  p.peekPrecedence() {
+	for !p.peekTokenIs(token.SEMI) && precedence < p.peekPrecedence() {
 		infix := p.infixParseFns[p.peekToken.Type]
 		if infix == nil {
 			return leftExp
@@ -174,7 +174,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 
 		leftExp = infix(leftExp)
 	}
-
 
 	return leftExp
 }
@@ -193,9 +192,9 @@ func (p *Parser) parsePrefixExpression() ast.Expression {
 
 func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression := &ast.InfixExpression{
-		Token: p.curToken,
+		Token:    p.curToken,
 		Operator: p.curToken.Literal,
-		Left: left,
+		Left:     left,
 	}
 
 	precedence := p.curPrecendence()

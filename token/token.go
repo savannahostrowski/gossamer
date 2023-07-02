@@ -82,6 +82,7 @@ const (
 	ELSE   = "ELSE"
 	ELIF   = "ELIF"
 	RETURN = "RETURN"
+	LAMBDA = "LAMBDA"
 
 	//Temporary
 	LET = "LET"
@@ -100,6 +101,7 @@ var keywords = map[string]TokenType{
 	"else":   ELSE,
 	"elif":   ELIF,
 	"return": RETURN,
+	"lambda": LAMBDA,
 	// TODO: REMOVE
 	"let" : LET,
 }
